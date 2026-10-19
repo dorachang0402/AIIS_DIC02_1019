@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>50 Startups: 複迴歸與 3 大特徵選取演算法互動探索器</title>
+  <meta name="description" content="50 Startups Multiple Linear Regression and 3 Feature Selection Algorithms Explorer (Forward SFS, RFE, Lasso) adhering to CRISP-DM methodology.">
+
+  <!-- Google Fonts: Outfit, Inter, Fira Code -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Chart.js 4.4.1 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="site-nav" id="siteNav">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <div class="nav-logo-badge">50S-MLR</div>
+        <div class="nav-title-group">
+          <h1>
+            50 Startups 複迴歸分析
+            <span class="nav-badge-pill">CRISP-DM 6 步驟</span>
+          </h1>
+        </div>
+      </div>
+      <nav class="nav-links">
+        <a href="#controlConsole" class="nav-btn nav-btn-secondary">
+          <i class="fa-solid fa-sliders"></i> 特徵控制台
+        </a>
+        <a href="#simulatorSection" class="nav-btn nav-btn-secondary">
+          <i class="fa-solid fa-calculator"></i> 獲利模擬器
+        </a>
+        <a href="https://github.com/dorachang0402/AIIS_DIC02_1019" target="_blank" rel="noopener noreferrer" class="nav-btn nav-btn-primary">
+          <i class="fa-brands fa-github"></i> GitHub 儲存庫
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-wrapper">
+    <!-- Hero Section -->
+    <section class="hero-banner" id="heroBanner">
+      <div class="hero-badge-tag">
+        <i class="fa-solid fa-microchip"></i> 跨產業數據探勘標準流程 (CRISP-DM Stage 4: Modeling)
+      </div>
+      <h2>3 大特徵選取演算法與精簡模型評估</h2>
+      <p>
+        探討創業公司的研發支出 (R&D Spend)、營銷支出 (Marketing Spend)、行政支出 (Administration) 及所在州別 (State) 與最終利潤 (Profit) 的因果關聯。比較 <strong>Forward SFS</strong>、<strong>RFE</strong> 與 <strong>Lasso L1 正則化</strong> 在不同特徵數量下的測試集泛化表現。
+      </p>
+      <div class="hero-features-chips">
+        <div class="hero-chip"><i class="fa-solid fa-check-circle"></i> 啞變數陷阱排除 (Dummy Trap Solved)</div>
+        <div class="hero-chip"><i class="fa-solid fa-star"></i> 最優模型精簡法則 (Parsimony Principle)</div>
+        <div class="hero-chip"><i class="fa-solid fa-chart-line"></i> 互動式動態試算 (Real-Time Sandbox)</div>
+      </div>
+    </section>
+
+    <!-- Interactive Control Console -->
+    <section class="control-console" id="controlConsole">
+      <!-- 1. Algorithm Selection -->
+      <div class="section-label">
+        <i class="fa-solid fa-layer-group"></i> 步驟 1：選擇特徵選取演算法 (3 Feature Selection Algorithms)
+      </div>
+      <div class="algo-tabs" id="algoTabs">
+        <button class="algo-tab-btn active" id="tabForward" data-algo="Forward SFS">
+          <i class="fa-solid fa-forward-step"></i> Forward SFS (逐步向前選取)
+          <span class="tab-badge">貪婪逐次增加</span>
+        </button>
+        <button class="algo-tab-btn" id="tabRFE" data-algo="RFE">
+          <i class="fa-solid fa-scissors"></i> RFE (遞迴特徵消除)
+          <span class="tab-badge">反向逐步剔除</span>
+        </button>
+        <button class="algo-tab-btn" id="tabLasso" data-algo="Lasso">
+          <i class="fa-solid fa-compress"></i> Lasso (L1 稀疏正則化)
+          <span class="tab-badge">係數自動收縮</span>
+        </button>
+        <button class="algo-tab-btn" id="tabCompare" data-algo="Compare">
+          <i class="fa-solid fa-code-compare"></i> 3 演算法綜合對比 (Comparison Matrix)
+          <span class="tab-badge">全景評比</span>
+        </button>
+      </div>
+
+      <!-- 2. Feature Count Selector (k) -->
+      <div class="section-label">
+        <i class="fa-solid fa-cubes-stacked"></i> 步驟 2：切換特徵數量 (Number of Features, k)
+      </div>
+      <div class="k-controls-container" id="kControlsContainer">
+        <div class="k-step-buttons" id="kStepButtons">
+          <button class="k-btn" id="kBtn1" data-k="1">k = 1 特徵</button>
+          <button class="k-btn sweet-spot active" id="kBtn2" data-k="2">
+            <i class="fa-solid fa-star"></i> k = 2 特徵 (★ 最優模型)
+          </button>
+          <button class="k-btn" id="kBtn3" data-k="3">k = 3 特徵</button>
+          <button class="k-btn" id="kBtn4" data-k="4">k = 4 特徵</button>
+          <button class="k-btn" id="kBtn5" data-k="5">k = 5 特徵 (全模型)</button>
+        </div>
+        <div class="k-legend-note">
+          <i class="fa-solid fa-circle-info"></i>
+          奧卡姆剃刀原則：k=2 達到最小 RMSE (8,198.80) 與最大 R² (0.9474)
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Performance Indicator Cards (KPIs) -->
+    <section class="metrics-grid" id="metricsGrid">
+      <div class="metric-card optimal" id="cardRMSE">
+        <div class="metric-header">
+          <span class="metric-title">RMSE (均方根誤差)</span>
+          <span class="metric-badge" id="badgeRMSE">★ 最佳表現</span>
+        </div>
+        <div class="metric-value" id="valRMSE">$8,198.80</div>
+        <div class="metric-desc">
+          <i class="fa-solid fa-arrow-down-long"></i> 測試集預測偏誤 (越低越好)
+        </div>
+      </div>
+
+      <div class="metric-card optimal" id="cardR2">
+        <div class="metric-header">
+          <span class="metric-title">R-squared (判定係數 R²)</span>
+          <span class="metric-badge" id="badgeR2">最高解釋力</span>
+        </div>
+        <div class="metric-value" id="valR2">0.9474</div>
+        <div class="metric-desc">
+          <i class="fa-solid fa-circle-check"></i> 可解釋 94.74% 獲利變異量
+        </div>
+      </div>
+
+      <div class="metric-card" id="cardAdjR2">
+        <div class="metric-header">
+          <span class="metric-title">Adjusted R² (調整後 R²)</span>
+          <span class="metric-badge">自由度懲罰</span>
+        </div>
+        <div class="metric-value" id="valAdjR2">0.9324</div>
+        <div class="metric-desc">
+          <i class="fa-solid fa-scale-balanced"></i> 消除盲目增添特徵帶來的虛胖
+        </div>
+      </div>
+
+      <div class="metric-card" id="cardMAE">
+        <div class="metric-header">
+          <span class="metric-title">MAE (平均絕對誤差)</span>
+          <span class="metric-badge">實際平均落差</span>
+        </div>
+        <div class="metric-value" id="valMAE">$6,886.59</div>
+        <div class="metric-desc">
+          <i class="fa-solid fa-dollar-sign"></i> 預測值與實際利潤平均差距
+        </div>
+      </div>
+
+      <div class="metric-card" id="cardFStat">
+        <div class="metric-header">
+          <span class="metric-title">F-Statistic & p-value</span>
+          <span class="metric-badge">顯著性檢定</span>
+        </div>
+        <div class="metric-value" id="valFStat">349.04</div>
+        <div class="metric-desc">
+          <i class="fa-solid fa-certificate"></i> p < 0.0001 (統計上高度顯著)
+        </div>
+      </div>
+    </section>
+
+    <!-- Parsimony Callout Notice -->
+    <div class="parsimony-box" id="parsimonyBox">
+      <div class="parsimony-icon"><i class="fa-solid fa-award"></i></div>
+      <div class="parsimony-content">
+        <h4 id="parsimonyTitle">模型精簡法則判定：k = 2 為最具商業價值的黃金模型</h4>
+        <p id="parsimonyDesc">
+          相較於納入所有 5 個變數的全模型，僅保留 <strong>[R&D Spend, Marketing Spend]</strong> 不僅 RMSE 由 $9,138.0 降至 $8,198.8，且避免了無效行政開銷與州別共線性干擾，具備最佳泛化能力。
+        </p>
+      </div>
+    </div>
+
+    <!-- Dual Interactive Charts Section -->
+    <section class="charts-grid-2" id="chartsSection">
+      <!-- Chart 1: RMSE by Number of Features -->
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <h4><i class="fa-solid fa-chart-line"></i> RMSE by Number of Features</h4>
+          <span class="pill-badge" id="chart1Badge">Current: Forward SFS</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="rmseChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2: R-squared by Number of Features -->
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <h4><i class="fa-solid fa-chart-area"></i> R-squared by Number of Features</h4>
+          <span class="pill-badge" id="chart2Badge">Current: Forward SFS</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="r2Chart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3-Algorithm Multi-Comparison Section -->
+    <section class="content-card comparison-section" id="comparisonSection">
+      <div class="card-title-row">
+        <h3><i class="fa-solid fa-network-wired"></i> 3 大特徵選取演算法全景對比分析 (Forward SFS vs. RFE vs. Lasso)</h3>
+        <span class="pill-badge">跨演算法橫向評估</span>
+      </div>
+      <div class="comparison-chart-container">
+        <canvas id="multiAlgoChart"></canvas>
+      </div>
+    </section>
+
+    <!-- Model Equation & Regression Coefficients -->
+    <section class="content-card" id="statisticsSection">
+      <div class="card-title-row">
+        <h3><i class="fa-solid fa-square-root-variable"></i> 模型方程式與統計檢定表 (Model Parameters & Significance)</h3>
+        <div class="card-actions">
+          <span class="pill-badge" id="featuresCountBadge">2 個特徵入選</span>
+        </div>
+      </div>
+
+      <!-- Formatted Mathematical Equation Box -->
+      <div class="equation-box" id="equationBox">
+        <div class="equation-label">迴歸方程式 (Multiple Regression Equation):</div>
+        <div id="equationText">
+          Profit = 46,346.34 + 0.7886 × (R&D Spend) + 0.0326 × (Marketing Spend)
+        </div>
+      </div>
+
+      <!-- Statistical Coefficient Table -->
+      <div class="data-table-wrapper">
+        <table class="custom-table" id="coefTable">
+          <thead>
+            <tr>
+              <th>變數名稱 (Feature)</th>
+              <th class="num-cell">迴歸係數 (β)</th>
+              <th class="num-cell">標準誤 (Std. Error)</th>
+              <th class="num-cell">t 統計量 (t-stat)</th>
+              <th class="num-cell">p 值 (p-value)</th>
+              <th class="num-cell">95% 信賴區間</th>
+              <th class="num-cell">VIF (共線性)</th>
+            </tr>
+          </thead>
+          <tbody id="coefTableBody">
+            <!-- Dynamically populated by app.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Live Startup Profit Predictor (Interactive Simulation Sandbox) -->
+    <section class="content-card" id="simulatorSection">
+      <div class="card-title-row">
+        <h3><i class="fa-solid fa-calculator"></i> 創業公司利潤即時模擬試算 (Live Startup Profit Predictor)</h3>
+        <span class="pill-badge">動態串接當前選定模型</span>
+      </div>
+
+      <div class="simulator-grid">
+        <!-- Input Sliders Column -->
+        <div class="sim-inputs-col">
+          <!-- R&D Spend Slider -->
+          <div class="sim-input-card" id="groupRD">
+            <div class="sim-input-header">
+              <label for="sliderRD"><i class="fa-solid fa-flask"></i> 研發支出 (R&D Spend)</label>
+              <span class="val-display" id="dispRD">$100,000</span>
+            </div>
+            <input type="range" class="sim-slider" id="sliderRD" min="0" max="200000" step="1000" value="100000">
+          </div>
+
+          <!-- Marketing Spend Slider -->
+          <div class="sim-input-card" id="groupMkt">
+            <div class="sim-input-header">
+              <label for="sliderMkt"><i class="fa-solid fa-bullhorn"></i> 營銷支出 (Marketing Spend)</label>
+              <span class="val-display" id="dispMkt">$250,000</span>
+            </div>
+            <input type="range" class="sim-slider" id="sliderMkt" min="0" max="500000" step="5000" value="250000">
+          </div>
+
+          <!-- Administration Slider -->
+          <div class="sim-input-card" id="groupAdmin">
+            <div class="sim-input-header">
+              <label for="sliderAdmin"><i class="fa-solid fa-briefcase"></i> 行政支出 (Administration)</label>
+              <span class="val-display" id="dispAdmin">$120,000</span>
+            </div>
+            <input type="range" class="sim-slider" id="sliderAdmin" min="0" max="250000" step="2500" value="120000">
+          </div>
+
+          <!-- State Selection -->
+          <div class="sim-input-card" id="groupState">
+            <div class="sim-input-header">
+              <label for="selectState"><i class="fa-solid fa-map-location-dot"></i> 所在州別 (State)</label>
+              <span class="val-display" id="dispState">California (基準)</span>
+            </div>
+            <select class="sim-state-select" id="selectState">
+              <option value="California">California (加利福尼亞州 - 基準組)</option>
+              <option value="New York">New York (紐約州)</option>
+              <option value="Florida">Florida (佛羅里達州)</option>
+            </select>
+          </div>
+
+          <!-- Quick Presets -->
+          <div>
+            <div class="section-label"><i class="fa-solid fa-wand-magic-sparkles"></i> 快速情境預設組 (Quick Presets)</div>
+            <div class="presets-group">
+              <button class="preset-btn" id="presetTech"><i class="fa-solid fa-rocket"></i> 高研發新創 (High-Tech VC)</button>
+              <button class="preset-btn" id="presetGrowth"><i class="fa-solid fa-arrow-trend-up"></i> 營銷擴張型 (Growth Mktg)</button>
+              <button class="preset-btn" id="presetBootstrap"><i class="fa-solid fa-seedling"></i> 精實創業 (Bootstrap Lean)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prediction Result Output Card -->
+        <div class="sim-output-card">
+          <div>
+            <div class="output-title-group">
+              <h4>預估年度利潤 (Estimated Net Profit)</h4>
+              <div class="output-profit-large" id="predProfitVal">$133,352.12</div>
+            </div>
+
+            <div class="output-breakdown-box">
+              <div class="breakdown-row">
+                <span class="dim">基礎利潤項 (Intercept, β₀):</span>
+                <span class="val" id="bdIntercept">+$46,346.34</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="dim">研發支出邊際利潤貢獻:</span>
+                <span class="val" id="bdRD">+$78,861.83 (+$0.79 / 美元)</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="dim">營銷支出邊際利潤貢獻:</span>
+                <span class="val" id="bdMkt">+$8,144.16 (+$0.03 / 美元)</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="dim">行政支出邊際貢獻:</span>
+                <span class="val" id="bdAdmin">未納入或無顯著影響 ($0.00)</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="dim">地區加乘效應 (State Effect):</span>
+                <span class="val" id="bdState">加州基準組 ($0.00)</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="font-size: 13px; color: var(--text-muted); line-height: 1.5;">
+            <i class="fa-solid fa-lightbulb" style="color: var(--honey-bronze);"></i>
+            <strong>商業啟發：</strong> 每投資 1 美元於研發 (R&D)，預期能為新創公司帶來約 <strong>$0.79 美元</strong> 的邊際利潤回報，為各項資本支出中最具回報效益之槓桿。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Test Set Residuals & Diagnostic -->
+    <section class="content-card" id="diagnosticSection">
+      <div class="card-title-row">
+        <h3><i class="fa-solid fa-bullseye"></i> 測試集預測診斷與殘差分析 (Test Set Residuals & Outliers)</h3>
+        <span class="pill-badge">80/20 樣本分割評估</span>
+      </div>
+      <div class="data-table-wrapper">
+        <table class="custom-table" id="outliersTable">
+          <thead>
+            <tr>
+              <th>排名 (Rank)</th>
+              <th>公司樣本 (Index)</th>
+              <th class="num-cell">實際利潤 (Actual)</th>
+              <th class="num-cell">模型預測值 (Predicted)</th>
+              <th class="num-cell">殘差 (Residual)</th>
+              <th class="num-cell">絕對百分比誤差 (APE %)</th>
+            </tr>
+          </thead>
+          <tbody id="outliersTableBody">
+            <!-- Dynamically populated by app.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CRISP-DM Methodology Cards -->
+    <section class="content-card" id="methodologySection">
+      <div class="card-title-row">
+        <h3><i class="fa-solid fa-diagram-project"></i> CRISP-DM 資料探勘 6 大標準步驟實踐成果</h3>
+        <span class="pill-badge">跨產業標準架構</span>
+      </div>
+      <div class="crisp-grid">
+        <div class="crisp-step-card">
+          <div class="step-num">Step 01</div>
+          <div class="step-title">商業理解 (Business)</div>
+          <div class="step-desc">釐清新創資本支出對獲利的邊際效益，協助 VC 創投機構量化評估新創公司價值。</div>
+        </div>
+        <div class="crisp-step-card">
+          <div class="step-num">Step 02</div>
+          <div class="step-title">資料理解 (Data)</div>
+          <div class="step-desc">檢閱 50 筆新創收支，確認零缺失值，分析各州別分佈 (NY:17, CA:17, FL:16)。</div>
+        </div>
+        <div class="crisp-step-card">
+          <div class="step-num">Step 03</div>
+          <div class="step-title">資料準備 (Preparation)</div>
+          <div class="step-desc">實施 One-Hot Encoding 並移除基準類別 (drop='first') 消除啞變數陷阱，切分 80/20 訓練測試集。</div>
+        </div>
+        <div class="crisp-step-card">
+          <div class="step-num">Step 04</div>
+          <div class="step-title">模型建立 (Modeling)</div>
+          <div class="step-desc">交叉應用 Forward SFS、RFE 與 Lasso 進行特徵選取，一致鎖定 k=2 為精簡最佳解。</div>
+        </div>
+        <div class="crisp-step-card">
+          <div class="step-num">Step 05</div>
+          <div class="step-title">模型評估 (Evaluation)</div>
+          <div class="step-desc">檢定 RMSE ($8,198.80) 與 R² (0.9474)，驗證殘差無自相關與異質變異。</div>
+        </div>
+        <div class="crisp-step-card">
+          <div class="step-num">Step 06</div>
+          <div class="step-title">模型部署 (Deployment)</div>
+          <div class="step-desc">建構可直接輸入資本預算之即時網頁試算模型與 GitHub Pages 雲端託管。</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <h4>50 Startups: Multiple Linear Regression Project</h4>
+        <p>AIoT & 資訊安全碩專班 | 跨產業數據探勘標準流程實踐</p>
+      </div>
+      <div class="footer-right">
+        <p>GitHub Repository: <a href="https://github.com/dorachang0402/AIIS_DIC02_1019" target="_blank" rel="noopener noreferrer">dorachang0402/AIIS_DIC02_1019</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="model_data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
